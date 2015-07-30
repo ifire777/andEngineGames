@@ -138,8 +138,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	hudRunLeft.setPosition(hudRunLeft.getHeight() / 2 + 25, hudRunLeft.getWidth() / 2 + 8);
 	hudRunRight.setPosition(SCENE_WIDTH - (hudRunLeft.getHeight() / 2 + 25), hudRunLeft.getWidth() / 2 + 8);
 
-	aiRun= new ActionInidcation(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, camera, vbom);
-	
+	aiRun= new ActionInidcation(0f,0f, 0.5f, 1f, camera, vbom);
+	aiRun.setPosition(SCENE_WIDTH / 2, SCENE_HEIGHT / 8);
 	
 	// CREATE SCORE TEXT
 	final Text scoreText = new Text(0, 0, resourcesManager.font, "Time: 0.1234567890", new TextOptions(HorizontalAlign.LEFT), vbom);

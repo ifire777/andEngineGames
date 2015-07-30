@@ -25,14 +25,11 @@ public class ActionInidcation extends HUD {
     private Sprite mIndicRedArea;
     private Sprite mIndRunner;
 
-    private float mRunnerValueX, mRunnerValueY;
+    private float mIndRedAreaHalf;
 
-    private float mRedXAprox, mRedHalfWightAprox;
-
-   // private float mBgValueX, mBgValueWight;
     private float mIndStartX, mIndEndX, mIndHalfWight;
 
-    private Float mIndicVal = 0f, mIndicShag = 0.005f;
+    private Float mIndicVal = 0f, mIndicShag = 0f;
 
     // ===========================================================
     // Constructors
@@ -46,7 +43,7 @@ public class ActionInidcation extends HUD {
 
 	setIndWH(iWKaf, iHKaf);
 	setRedAreaWH(iWKaf, iHKaf);
-	
+
 	this.registerUpdateHandler(new TimerHandler(1 / RUNNER_FPS, true, new ITimerCallback() {
 	    @Override
 	    public void onTimePassed(final TimerHandler pTimerHandler) {
@@ -65,7 +62,7 @@ public class ActionInidcation extends HUD {
 	mIndicShag = (2 * mIndHalfWight) / (RUNNER_FPS * 5);
 
 	mIndicVal = this.mIndicFon.getX();
-	
+
     }
 
     // ===========================================================
@@ -80,6 +77,7 @@ public class ActionInidcation extends HUD {
     private void setRedAreaWH(float iWigthKaf, float iHeightKaf) {
 	this.mIndicRedArea.setWidth(this.mIndicRedArea.getWidth() * iWigthKaf);
 	this.mIndicRedArea.setHeight(this.mIndicRedArea.getHeight() * iHeightKaf);
+	mIndRedAreaHalf = this.mIndicRedArea.getWidth() / 2;
     }
 
     private void onMoveAction() {
@@ -92,7 +90,15 @@ public class ActionInidcation extends HUD {
 	    mIndicShag *= -1;
 	}
 	this.mIndRunner.setPosition(mIndicVal, mIndRunner.getY());
-   }
+    }
+
+    public boolean getResult() {
+	boolean res = false;
+	if (mIndicVal >= this.mIndicRedArea.getX() - mIndRedAreaHalf && mIndicVal <= this.mIndicRedArea.getX() + mIndRedAreaHalf) {
+	    res = true;
+	}
+	return res;
+    }
 
     // ===========================================================
     // Getters & Setters
@@ -104,10 +110,6 @@ public class ActionInidcation extends HUD {
 
     public void setmIndicShag(Float mIndicShag) {
 	this.mIndicShag = mIndicShag;
-    }
-
-    public Float getmIndicVal() {
-	return mIndicVal;
     }
 
 }
