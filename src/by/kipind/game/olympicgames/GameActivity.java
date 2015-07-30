@@ -16,14 +16,24 @@ import org.andengine.ui.activity.BaseGameActivity;
 
 import android.view.KeyEvent;
 
+
+
+
 public class GameActivity extends BaseGameActivity {
+    protected static Integer SCENE_WIDTH = 800;
+    protected static Integer SCENE_HEIGHT = 450;
+
+    
     private BoundCamera camera;
     private ResourcesManager resourcesManager;
 
+    
+    
+    
     @Override
     public EngineOptions onCreateEngineOptions() {
-	camera = new BoundCamera(0, 0, 800, 480);
-	EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(800, 480), this.camera);
+	camera = new BoundCamera(0, 0, SCENE_WIDTH, SCENE_HEIGHT);
+	EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(SCENE_WIDTH, SCENE_HEIGHT), this.camera);
 	engineOptions.getAudioOptions().setNeedsMusic(true).setNeedsSound(true);
 	engineOptions.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
 	return engineOptions;
@@ -46,11 +56,6 @@ public class GameActivity extends BaseGameActivity {
 	mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() {
 	    public void onTimePassed(final TimerHandler pTimerHandler) {
 		mEngine.unregisterUpdateHandler(pTimerHandler);
-		// load menu resources, create menu scene
-		// set menu scene using scene manager
-		// disposeSplashScene();
-		// READ NEXT ARTICLE FOR THIS PART.
-		// http://www.matim-dev.com/full-game-tutorial---part-5.html
 		SceneManager.getInstance().createMenuScene();
 
 	    }

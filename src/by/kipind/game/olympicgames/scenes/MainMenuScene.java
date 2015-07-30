@@ -55,7 +55,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
     }
 
     private void createBackground() {
-	attachChild(new Sprite(SCENE_WIDTH, SCENE_HEIGHT, resourcesManager.menu_background_region, vbom) {
+
+	attachChild(new Sprite(SCENE_WIDTH/2, SCENE_HEIGHT/2, resourcesManager.menu_background_region, vbom) {
 	    @Override
 	    protected void preDraw(GLState pGLState, Camera pCamera) {
 		super.preDraw(pGLState, pCamera);
@@ -66,7 +67,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
     private void createMenuChildScene() {
 	menuChildScene = new MenuScene(camera);
-	menuChildScene.setPosition(SCENE_WIDTH, SCENE_HEIGHT);
+	menuChildScene.setPosition(SCENE_WIDTH/2, SCENE_HEIGHT/2);
 
 	final IMenuItem playMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_PLAY, resourcesManager.play_region, vbom), 1.2f, 1);
 	final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(new SpriteMenuItem(MENU_OPTIONS, resourcesManager.options_region, vbom), 1.2f, 1);
@@ -77,8 +78,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	menuChildScene.buildAnimations();
 	menuChildScene.setBackgroundEnabled(false);
 
-	playMenuItem.setPosition((SCENE_WIDTH - playMenuItem.getWidth()) / 2, (SCENE_HEIGHT - playMenuItem.getHeight()) / 2);
-	optionsMenuItem.setPosition((SCENE_WIDTH - optionsMenuItem.getWidth()) / 2, (SCENE_HEIGHT - optionsMenuItem.getHeight()) / 2 - playMenuItem.getHeight());
+	playMenuItem.setPosition(0,0);
+	optionsMenuItem.setPosition(0, 0 -playMenuItem.getHeight()-5);
 
 	menuChildScene.setOnMenuItemClickListener(this);
 

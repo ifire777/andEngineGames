@@ -48,13 +48,20 @@ public class ResourcesManager {
     public BuildableBitmapTextureAtlas gameTextureAtlas;
 
     // Game Texture Regions
-    public ITextureRegion platform1_region;
-    public ITextureRegion platform2_region;
-    public ITextureRegion platform3_region;
-    public ITextureRegion coin_region;
-
+    public ITextureRegion game_background_region;
+    public ITextureRegion game_ground_line;
+    public ITextureRegion game_hud_borders_region;
+    public ITextureRegion game_hud_run_left;
+    public ITextureRegion game_hud_run_right;
+    public ITextureRegion timer_img;
+    public ITextureRegion ge_ai_fon;
+    public ITextureRegion ge_ai_red;
+    public ITextureRegion ge_ai_runner;
+    public ITextureRegion stop_line;
+    
     
     public ITiledTextureRegion player_region;
+    public ITiledTextureRegion svetofor_region;
     
     // ---------------------------------------------
     // CLASS LOGIC
@@ -74,7 +81,7 @@ public class ResourcesManager {
 
     private void loadMenuGraphics() {
 	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
-	menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
+	menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 	menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "menu_background.png");
 	play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "play.png");
 	options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, activity, "options.png");
@@ -101,14 +108,28 @@ public class ResourcesManager {
 
     private void loadGameGraphics() {
 	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-	    gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR);
+	    gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 4096, 4096, TextureOptions.BILINEAR);
 	    
-	    platform1_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "plt_green.png");
-	    platform2_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "plt_red.png");
-	    platform3_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "plt_yello.png");
-	    coin_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "coin.png");
 	    
-	    player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "hero.png", 3, 1);
+	    game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "fon_beg.jpg");
+	    game_ground_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "ground_line2.png");
+	    game_hud_borders_region= BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "hud_borders.png");
+	    game_hud_run_left= BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bt_l_leg.png");
+	    game_hud_run_right= BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bt_r_leg.png");
+	    
+	    timer_img = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "run_timer.png");
+	    stop_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "finish_line.png");
+	    
+	    ge_ai_fon = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik__bg.png");
+	    ge_ai_red = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik__red.png");
+	    ge_ai_runner = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik__begun.png");
+	    
+	     
+	     
+	    player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_beg.png", 5, 2);
+	    svetofor_region= BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_svetfor.png", 5, 1);
+	    
+	    
 	    try 
 	    {
 	        this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -118,9 +139,14 @@ public class ResourcesManager {
 	    {
 	        Debug.e(e);
 	    }
+	    
+	    
+	    
     }
 
     private void loadGameFonts() {
+	
+	
 
     }
 

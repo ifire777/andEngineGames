@@ -4,16 +4,18 @@ import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.SAXUtils;
+import org.andengine.util.level.constants.LevelConstants;
 
 import android.app.Activity;
 import by.kipind.game.olympicgames.ResourcesManager;
 import by.kipind.game.olympicgames.SceneManager.SceneType;
 
 public abstract class BaseScene extends Scene {
-    protected static Integer SCENE_WIDTH=400;
-    protected static Integer SCENE_HEIGHT=240;
+    protected static Integer SCENE_WIDTH = 800;
+    protected static Integer SCENE_HEIGHT = 450;
+
    
-    
     // ---------------------------------------------
     // VARIABLES
     // ---------------------------------------------

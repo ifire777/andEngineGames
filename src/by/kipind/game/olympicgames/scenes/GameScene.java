@@ -3,12 +3,11 @@ package by.kipind.game.olympicgames.scenes;
 import java.io.IOException;
 
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
-import org.andengine.entity.modifier.LoopEntityModifier;
-import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
@@ -19,16 +18,19 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.SAXUtils;
 import org.andengine.util.adt.align.HorizontalAlign;
-import org.andengine.util.adt.color.Color;
 import org.andengine.util.level.EntityLoader;
 import org.andengine.util.level.constants.LevelConstants;
 import org.andengine.util.level.simple.SimpleLevelEntityLoaderData;
 import org.andengine.util.level.simple.SimpleLevelLoader;
 import org.xml.sax.Attributes;
 
+import android.graphics.Color;
+import android.util.Log;
 import by.kipind.game.olympicgames.SceneManager;
 import by.kipind.game.olympicgames.SceneManager.SceneType;
+import by.kipind.game.olympicgames.sceneElements.ActionInidcation;
 import by.kipind.game.olympicgames.sprite.Player;
+import by.kipind.game.olympicgames.sprite.Svetofor;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -41,6 +43,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener {
+    final String LOG_TAG = "myLogs";
+
     private static int STEPS_PER_SECOND = 60;
     // ---------
     private static final String TAG_ENTITY = "entity";
@@ -48,25 +52,33 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     private static final String TAG_ENTITY_ATTRIBUTE_Y = "y";
     private static final String TAG_ENTITY_ATTRIBUTE_TYPE = "type";
 
-    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM1 = "platform1";
+    // private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_timer =
+    // "platform1";
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2 = "platform2";
-    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM3 = "platform3";
-    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN = "coin";
+    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_STOP = "stop";
+    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_GROUND = "ground";
 
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player";
-
+    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_SVETOFOR = "svetofor";
     // ----------
+    private static int lvlWidth = 3200;
+    private static int lvlHeight = 450;
+
     private HUD gameHUD;
-    private Text scoreText;
-    private int score = 0;
+    private ActionInidcation aiRun;
+
+    private Sprite hudAreaBorders;
+    private Sprite hudTimer;
+    private Sprite hudRunLeft;
+    private Sprite hudRunRight;
 
     private PhysicsWorld physicsWorld;
 
     private Player player;
-    private boolean firstTouch = false;
-
+    private Svetofor svetofor;
     private Text gameOverText;
     private boolean gameOverDisplayed = false;
+    private boolean firstStep = true;
 
     @Override
     public void createScene() {
@@ -92,35 +104,86 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     @Override
     public void disposeScene() {
 	camera.setHUD(null);
-	camera.setCenter(SCENE_WIDTH, SCENE_HEIGHT);
+	camera.setCenter(SCENE_WIDTH / 2, SCENE_HEIGHT / 2);
 	camera.setChaseEntity(null);
 	// TODO code responsible for disposing scene
 	// removing all game scene objects.
     }
 
     private void createBackground() {
-	setBackground(new Background(Color.BLUE));
+	// setBackground(new SpriteBackground(new Sprite(SCENE_WIDTH,
+	// SCENE_HEIGHT, resourcesManager.game_background_region, vbom)));
+	attachChild(new Sprite(GameScene.lvlWidth / 2, GameScene.lvlHeight / 2, resourcesManager.game_background_region, vbom));
+
     }
 
     private void createHUD() {
 	gameHUD = new HUD();
+	hudAreaBorders = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, resourcesManager.game_hud_borders_region, vbom);
+	hudTimer = new Sprite(0, 0, resourcesManager.timer_img, vbom);
+	hudTimer.setPosition(hudTimer.getWidth() / 1.3f, SCENE_HEIGHT - hudTimer.getHeight() / 1.5f);
 
+	hudRunLeft = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, resourcesManager.game_hud_run_left, vbom) {
+	    @Override
+	    public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+		return SceneObjectTouch(this);
+	    }
+	};
+	hudRunRight = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, resourcesManager.game_hud_run_right, vbom) {
+	    @Override
+	    public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+		return SceneObjectTouch(this);
+	    }
+	};
+	hudRunLeft.setPosition(hudRunLeft.getHeight() / 2 + 25, hudRunLeft.getWidth() / 2 + 8);
+	hudRunRight.setPosition(SCENE_WIDTH - (hudRunLeft.getHeight() / 2 + 25), hudRunLeft.getWidth() / 2 + 8);
+
+	aiRun= new ActionInidcation(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, camera, vbom);
+	
+	
 	// CREATE SCORE TEXT
-	scoreText = new Text(20, 420, resourcesManager.font, "Score: 0123456789", new TextOptions(HorizontalAlign.LEFT), vbom);
+	final Text scoreText = new Text(0, 0, resourcesManager.font, "Time: 0.1234567890", new TextOptions(HorizontalAlign.LEFT), vbom);
 	scoreText.setAnchorCenter(0, 0);
-	scoreText.setText("Score: 0");
+	scoreText.setText("0.000");
+	scoreText.setPosition(hudTimer.getX() + hudTimer.getWidth() / 2, SCENE_HEIGHT - scoreText.getHeight());
+	scoreText.setSize(scoreText.getWidth(), scoreText.getHeight() / 2);
+
+	gameHUD.registerTouchArea(hudRunLeft);
+	gameHUD.registerTouchArea(hudRunRight);
+	gameHUD.setTouchAreaBindingOnActionDownEnabled(true);
+
+	gameHUD.attachChild(hudAreaBorders);
+	gameHUD.attachChild(hudTimer);
+	gameHUD.attachChild(hudRunRight);
+	gameHUD.attachChild(hudRunLeft);
+	gameHUD.attachChild(aiRun);
 	gameHUD.attachChild(scoreText);
+
+	gameHUD.registerUpdateHandler(new TimerHandler(1 / 230f, true, new ITimerCallback() {
+	    private Integer tCounter = 0;
+
+	    @Override
+	    public void onTimePassed(final TimerHandler pTimerHandler) {
+		if (!player.isFinish() && !firstStep && !gameOverDisplayed) {
+		    tCounter++;
+		    scoreText.setText(String.valueOf((double) tCounter / 1000));
+		    // Log.d(LOG_TAG, tCounter + "    sum---->" +
+		    // String.valueOf(tCounter / 1000d));
+
+		}
+	    }
+	}));
 
 	camera.setHUD(gameHUD);
     }
 
     private void addToScore(int i) {
-	this.score += i;
-	this.scoreText.setText("Score: " + score);
+	// this.score = i;
+	// this.scoreText.setText("Score: " + score);
     }
 
     private void createPhysics() {
-	physicsWorld = new FixedStepPhysicsWorld(STEPS_PER_SECOND, new Vector2(0, -17), false);
+	physicsWorld = new FixedStepPhysicsWorld(STEPS_PER_SECOND, new Vector2(0, -9), false);
 	physicsWorld.setContactListener(contactListener());
 	registerUpdateHandler(physicsWorld);
     }
@@ -151,44 +214,50 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 		final Sprite levelObject;
 
-		if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM1)) {
-		    levelObject = new Sprite(x, y, resourcesManager.platform1_region, vbom);
-		    PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF).setUserData("platform1");
-		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2)) {
-		    levelObject = new Sprite(x, y, resourcesManager.platform2_region, vbom);
+		if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2)) {
+		    levelObject = new Sprite(x, y, resourcesManager.ge_ai_fon, vbom);
 		    final Body body = PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF);
 		    body.setUserData("platform2");
 		    physicsWorld.registerPhysicsConnector(new PhysicsConnector(levelObject, body, true, false));
-		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM3)) {
-		    levelObject = new Sprite(x, y, resourcesManager.platform3_region, vbom);
+		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_GROUND)) {
+		    levelObject = new Sprite(x, y, resourcesManager.game_ground_line, vbom);
 		    final Body body = PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF);
-		    body.setUserData("platform3");
+		    body.setUserData("ground");
 		    physicsWorld.registerPhysicsConnector(new PhysicsConnector(levelObject, body, true, false));
-		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_COIN)) {
-		    levelObject = new Sprite(x, y, resourcesManager.coin_region, vbom) {
+		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_STOP)) {
+		    levelObject = new Sprite(x, y, resourcesManager.stop_line, vbom) {
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 			    super.onManagedUpdate(pSecondsElapsed);
 
 			    if (player.collidesWith(this)) {
-				addToScore(10);
-				this.setVisible(false);
 				this.setIgnoreUpdate(true);
+				player.onFinish();
 			    }
 			}
 		    };
-		    levelObject.registerEntityModifier(new LoopEntityModifier(new ScaleModifier(1, 1, 1.3f)));
 		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER)) {
 		    player = new Player(x, y, vbom, camera, physicsWorld) {
-			@Override
-			public void onDie() {
+			public void onFinish() {
+			    super.onFinish();
+			    stopAnimation(0);
+			    body.setLinearVelocity(0, 0);
+			    body.applyLinearImpulse(4, 0, body.getPosition().x, body.getPosition().y);
+
 			    if (!gameOverDisplayed) {
 				displayGameOverText();
 			    }
 			}
 		    };
 		    levelObject = player;
-		} else {
+		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_SVETOFOR)) {
+		    svetofor = new Svetofor(x, y, vbom, camera, physicsWorld);
+		    levelObject = svetofor;
+		    svetofor.Start();
+
+		}
+
+		else {
 		    throw new IllegalArgumentException();
 		}
 
@@ -201,16 +270,46 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	levelLoader.loadLevelFromAsset(activity.getAssets(), "level/" + levelID + ".lvl");
     }
 
-    @Override
-    public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-	if (pSceneTouchEvent.isActionDown()) {
-	    if (!firstTouch) {
-		player.setRunning();
-		firstTouch = true;
-	    } else {
-		player.jump();
+    private boolean SceneObjectTouch(Object touchedObj) {
+	if (firstStep && (touchedObj.equals(hudRunLeft) || touchedObj.equals(hudRunRight)) && svetofor.getStatus() != Color.GREEN) {
+	    if (!gameOverDisplayed) {
+		displayGameOverText();
+	    }
+	    firstStep = false;
+
+	}
+	if (touchedObj.equals(hudRunLeft)&& !gameOverDisplayed) {
+	    if (this.isVisible()) {
+		player.run();
+		hudRunLeft.setVisible(false);
+		hudRunRight.setVisible(true);
+		firstStep = false;
+
+		return true;
+	    }
+
+	}
+	if (touchedObj.equals(hudRunRight)&& !gameOverDisplayed) {
+	    if (this.isVisible()) {
+		player.run();
+		hudRunLeft.setVisible(true);
+		hudRunRight.setVisible(false);
+		firstStep = false;
+
+		return true;
+
 	    }
 	}
+	return false;
+    }
+
+    @Override
+    public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+
+	/*
+	 * if (pSceneTouchEvent.isActionDown()) { if (!firstTouch) {
+	 * player.setRunning(); firstTouch = true; } else { player.run(); } }
+	 */
 	return false;
     }
 
@@ -247,10 +346,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	    }
 	};
 	return contactListener;
+
     }
 
     private void createGameOverText() {
-	gameOverText = new Text(0, 0, resourcesManager.font, "Game Over!", vbom);
+	gameOverText = new Text(0, 0, resourcesManager.font, "фальш старт!", vbom);
     }
 
     private void displayGameOverText() {
