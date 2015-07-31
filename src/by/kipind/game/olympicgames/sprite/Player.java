@@ -38,8 +38,6 @@ public abstract class Player extends AnimatedSprite {
     // CONSTRUCTOR
     // ---------------------------------------------
 
-    
-
     public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
 	super(pX, pY, ResourcesManager.getInstance().player_region, vbo);
 	createPhysics(camera, physicsWorld);
@@ -58,9 +56,13 @@ public abstract class Player extends AnimatedSprite {
     }
 
     public void setSpeed(float speed) {
-	this.speed = speed;
+	if (speed > 1) {
+	    this.speed = speed;
+	} else {
+	    this.speed = 1;
+	}
     }
-    
+
     public void onFinish() {
 	this.isFinish = true;
 
@@ -80,13 +82,7 @@ public abstract class Player extends AnimatedSprite {
 		camera.onUpdate(0.1f);
 		setSpeed(body.getLinearVelocity().x);
 
-		/*
-		 * if (getX() >= 3100 && canRun) { canRun = false; onFinish();
-		 * 
-		 * }
-		 */
-
-		if (getSpeed() < 1) {
+		if (getSpeed() <= 1) {
 		    canRun = false;
 		    // onStop();
 		}
@@ -132,7 +128,7 @@ public abstract class Player extends AnimatedSprite {
     public void setRunning() {
     }
 
-    public void run() {
+    public void powFunctionRun() {
 	if (isFinish) {
 	    return;
 	}
@@ -141,12 +137,23 @@ public abstract class Player extends AnimatedSprite {
 	    this.frameDuration = 0l;
 	    body.applyLinearImpulse(1f, 0, body.getPosition().x, body.getPosition().y);
 	} else {
-	    body.applyLinearImpulse((float) Math.pow(0.01, this.getSpeed()/100) , 0, body.getPosition().x, body.getPosition().y);
-
+	    body.applyLinearImpulse((float) Math.pow(0.01, this.getSpeed() / 100), 0, body.getPosition().x, body.getPosition().y);
 	}
-
 	canRun = true;
+    }
 
+    public void run() {
+	if (isFinish) {
+	    return;
+	}
+	if (getCurrentTileIndex() == 0) {
+	    this.setCurrentTileIndex(1);
+	    this.frameDuration = 0l;
+	    body.applyLinearImpulse(5f, 0, body.getPosition().x, body.getPosition().y);
+	} else {
+	    body.applyLinearImpulse(3f, 0, body.getPosition().x, body.getPosition().y);
+	}
+	canRun = true;
     }
 
     public void increaseFootContacts() {
@@ -177,7 +184,7 @@ public abstract class Player extends AnimatedSprite {
 	long[] spriteFameDuration = new long[spriteFrames.length];
 
 	Arrays.fill(spriteFameDuration, frameDuration);
-	
+
 	do {
 	    spriteFramesMod[i] = spriteFrames[iter];
 
@@ -187,7 +194,7 @@ public abstract class Player extends AnimatedSprite {
 		iter++;
 		i++;
 	    }
-	    
+
 	} while (iter != currentFrame);
 
 	animate(spriteFameDuration, spriteFramesMod, true);

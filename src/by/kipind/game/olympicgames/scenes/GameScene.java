@@ -69,7 +69,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     private Sprite hudAreaBorders;
     private Sprite hudTimer;
-    private Sprite hudRunLeft;
+    // private Sprite hudRunLeft;
     private Sprite hudRunRight;
 
     private PhysicsWorld physicsWorld;
@@ -77,7 +77,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     private Player player;
     private Svetofor svetofor;
     private Text gameOverText;
-    private boolean gameOverDisplayed = false;
+    private boolean falseStartDisplayed = false;
     private boolean firstStep = true;
 
     @Override
@@ -123,24 +123,27 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	hudTimer = new Sprite(0, 0, resourcesManager.timer_img, vbom);
 	hudTimer.setPosition(hudTimer.getWidth() / 1.3f, SCENE_HEIGHT - hudTimer.getHeight() / 1.5f);
 
-	hudRunLeft = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, resourcesManager.game_hud_run_left, vbom) {
-	    @Override
-	    public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
-		return SceneObjectTouch(this);
-	    }
-	};
+	/*
+	 * hudRunLeft = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2,
+	 * resourcesManager.game_hud_run_left, vbom) {
+	 * 
+	 * @Override public boolean onAreaTouched(final TouchEvent
+	 * pSceneTouchEvent, final float pTouchAreaLocalX, final float
+	 * pTouchAreaLocalY) { return SceneObjectTouch(this); } };
+	 */
 	hudRunRight = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, resourcesManager.game_hud_run_right, vbom) {
 	    @Override
 	    public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 		return SceneObjectTouch(this);
 	    }
 	};
-	hudRunLeft.setPosition(hudRunLeft.getHeight() / 2 + 25, hudRunLeft.getWidth() / 2 + 8);
-	hudRunRight.setPosition(SCENE_WIDTH - (hudRunLeft.getHeight() / 2 + 25), hudRunLeft.getWidth() / 2 + 8);
+	// hudRunLeft.setPosition(hudRunLeft.getHeight() / 2 + 25,
+	// hudRunLeft.getWidth() / 2 + 8);
+	hudRunRight.setPosition(SCENE_WIDTH - (hudRunRight.getHeight() / 2 + 25), hudRunRight.getWidth() / 2 + 8);
 
-	aiRun= new ActionInidcation(0f,0f, 0.5f, 1f, camera, vbom);
+	aiRun = new ActionInidcation(0f, 0f, 0.5f, 1f, 0, camera, vbom);
 	aiRun.setPosition(SCENE_WIDTH / 2, SCENE_HEIGHT / 8);
-	
+
 	// CREATE SCORE TEXT
 	final Text scoreText = new Text(0, 0, resourcesManager.font, "Time: 0.1234567890", new TextOptions(HorizontalAlign.LEFT), vbom);
 	scoreText.setAnchorCenter(0, 0);
@@ -148,14 +151,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	scoreText.setPosition(hudTimer.getX() + hudTimer.getWidth() / 2, SCENE_HEIGHT - scoreText.getHeight());
 	scoreText.setSize(scoreText.getWidth(), scoreText.getHeight() / 2);
 
-	gameHUD.registerTouchArea(hudRunLeft);
+	// gameHUD.registerTouchArea(hudRunLeft);
 	gameHUD.registerTouchArea(hudRunRight);
 	gameHUD.setTouchAreaBindingOnActionDownEnabled(true);
 
 	gameHUD.attachChild(hudAreaBorders);
 	gameHUD.attachChild(hudTimer);
 	gameHUD.attachChild(hudRunRight);
-	gameHUD.attachChild(hudRunLeft);
+	// gameHUD.attachChild(hudRunLeft);
 	gameHUD.attachChild(aiRun);
 	gameHUD.attachChild(scoreText);
 
@@ -164,9 +167,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	    @Override
 	    public void onTimePassed(final TimerHandler pTimerHandler) {
-		if (!player.isFinish() && !firstStep && !gameOverDisplayed) {
+		if (!player.isFinish() && !firstStep && !falseStartDisplayed) {
 		    tCounter++;
 		    scoreText.setText(String.valueOf((double) tCounter / 1000));
+
+		    aiRun.setRedAreaWH( (float) (1/Math.sqrt(player.getSpeed())), 1);
 		    // Log.d(LOG_TAG, tCounter + "    sum---->" +
 		    // String.valueOf(tCounter / 1000d));
 
@@ -244,8 +249,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			    body.setLinearVelocity(0, 0);
 			    body.applyLinearImpulse(4, 0, body.getPosition().x, body.getPosition().y);
 
-			    if (!gameOverDisplayed) {
-				displayGameOverText();
+			    if (!falseStartDisplayed) {
+				displayFalseStartText();
 			    }
 			}
 		    };
@@ -271,36 +276,39 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     }
 
     private boolean SceneObjectTouch(Object touchedObj) {
-	if (firstStep && (touchedObj.equals(hudRunLeft) || touchedObj.equals(hudRunRight)) && svetofor.getStatus() != Color.GREEN) {
-	    if (!gameOverDisplayed) {
-		displayGameOverText();
+	boolean res = false;
+
+	if (firstStep && touchedObj.equals(hudRunRight) && svetofor.getStatus() != Color.GREEN) {
+	    if (!falseStartDisplayed) {
+		displayFalseStartText();
 	    }
 	    firstStep = false;
 
 	}
-	if (touchedObj.equals(hudRunLeft)&& !gameOverDisplayed) {
-	    if (this.isVisible()) {
-		player.run();
-		hudRunLeft.setVisible(false);
-		hudRunRight.setVisible(true);
-		firstStep = false;
+	if (touchedObj.equals(hudRunRight) && hudRunRight.isVisible() && !falseStartDisplayed) {
+	    	if (aiRun.getResult() == 0 && aiRun.getBorderReachFlag() != 0) {
+			player.run();
+			firstStep = false;
+			res = true;
+		    }
+	/*if (aiRun.getBorderReachFlag() == -1) {
+		aiRun.inverMoveDerection();
+		
+	    }*/
+	    aiRun.setBorderReachFlag(0);
+	   
 
-		return true;
-	    }
-
-	}
-	if (touchedObj.equals(hudRunRight)&& !gameOverDisplayed) {
-	    if (this.isVisible()) {
-		player.run();
-		hudRunLeft.setVisible(true);
-		hudRunRight.setVisible(false);
-		firstStep = false;
-
-		return true;
-
-	    }
-	}
-	return false;
+	} /*
+	   * else if (touchedObj.equals(hudRunRight) && hudRunRight.isVisible()
+	   * && !falseStartDisplayed) { if (aiRun.getResult() == 0 &&
+	   * aiRun.getBorderReachFlag() != 0) { player.run(); //
+	   * hudRunLeft.setVisible(true); // hudRunRight.setVisible(false);
+	   * aiRun.inverMoveDerection(); aiRun.setBorderReachFlag(0); firstStep
+	   * = false; res = true; }
+	   * 
+	   * }
+	   */
+	return res;
     }
 
     @Override
@@ -353,11 +361,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	gameOverText = new Text(0, 0, resourcesManager.font, "фальш старт!", vbom);
     }
 
-    private void displayGameOverText() {
+    private void displayFalseStartText() {
 	camera.setChaseEntity(null);
 	gameOverText.setPosition(camera.getCenterX(), camera.getCenterY());
 	attachChild(gameOverText);
-	gameOverDisplayed = true;
+	falseStartDisplayed = true;
     }
 
 }
