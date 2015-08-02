@@ -29,7 +29,7 @@ public class Svetofor extends AnimatedSprite {
     private boolean start = false;
     private int status = -1;
 
-    public int frameDuration = 1000;
+    public int frameDuration = 700;
 
     private final int[] animFrame = new int[] { 0, 1, 2, 3, 4 };
 
@@ -40,6 +40,9 @@ public class Svetofor extends AnimatedSprite {
     public Svetofor(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
 	super(pX, pY, ResourcesManager.getInstance().svetofor_region, vbo);
 	createPhysics(camera, physicsWorld);
+	
+	//this.setWidth(this.getWidth()*4);
+	//this.setHeight(this.getHeight()*4);
 	
     }
 

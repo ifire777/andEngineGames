@@ -6,10 +6,11 @@ import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
 import by.kipind.game.olympicgames.scenes.BaseScene;
-import by.kipind.game.olympicgames.scenes.GameScene;
 import by.kipind.game.olympicgames.scenes.LoadingScene;
 import by.kipind.game.olympicgames.scenes.MainMenuScene;
 import by.kipind.game.olympicgames.scenes.SplashScene;
+import by.kipind.game.olympicgames.scenes.gameScene.Run100GS;
+import by.kipind.game.olympicgames.scenes.gameScene.RunBarGS;
 
 public class SceneManager {
     // ---------------------------------------------
@@ -104,14 +105,22 @@ public class SceneManager {
 	disposeSplashScene();
     }
 
-    public void loadGameScene(final Engine mEngine) {
+    public void loadGameScene(final Engine mEngine, final int gameNum) {
 	setScene(loadingScene);
 	ResourcesManager.getInstance().unloadMenuTextures();
 	mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() {
 	    public void onTimePassed(final TimerHandler pTimerHandler) {
 		mEngine.unregisterUpdateHandler(pTimerHandler);
 		ResourcesManager.getInstance().loadGameResources();
-		gameScene = new GameScene();
+		switch (gameNum) {
+		case 1:gameScene = new Run100GS();
+		    break;
+		case 2:gameScene = new RunBarGS();
+		    break;
+
+		default:
+		    break;
+		}
 		setScene(gameScene);
 	    }
 	}));

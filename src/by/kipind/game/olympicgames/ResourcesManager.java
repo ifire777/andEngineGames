@@ -56,13 +56,26 @@ public class ResourcesManager {
     public ITextureRegion timer_img;
     public ITextureRegion ge_ai_fon;
     public ITextureRegion ge_ai_red;
-    public ITextureRegion ge_ai_runner;
+    public ITextureRegion ge_ai_runner_on;
+    public ITextureRegion ge_ai_runner_off;
+    
+    public ITextureRegion ge_pi_fon;
+    public ITextureRegion ge_pi_red;
+    public ITextureRegion ge_pi_skin;
+    
+    
     public ITextureRegion stop_line;
+    
+    public ITextureRegion metraj_20;
+    public ITextureRegion metraj_40;
+    public ITextureRegion metraj_60;
+    public ITextureRegion metraj_80;
+    public ITextureRegion metraj_line;
     
     
     public ITiledTextureRegion player_region;
     public ITiledTextureRegion svetofor_region;
-    
+    public ITiledTextureRegion bt_run_region;
     // ---------------------------------------------
     // CLASS LOGIC
     // ---------------------------------------------
@@ -120,14 +133,25 @@ public class ResourcesManager {
 	    timer_img = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "run_timer.png");
 	    stop_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "finish_line.png");
 	    
-	    ge_ai_fon = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik__bg.png");
-	    ge_ai_red = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik__red.png");
-	    ge_ai_runner = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik__begun.png");
+	    metraj_20 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_20.png");
+	    metraj_40 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_40.png");
+	    metraj_60 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_60.png");
+	    metraj_80 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_80.png");
+	    metraj_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_line.png");
 	    
-	     
+	    ge_ai_fon = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_bg.png");
+	    ge_ai_red = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_red.png");
+	    ge_ai_runner_on = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_begun_on.png");
+	    ge_ai_runner_off = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_begun_off.png");
+	    
+	    ge_pi_fon = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "pi_fon.png");
+	    ge_pi_red = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "pi_red.png");
+	    ge_pi_skin = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "pi_form.png");
+		    
 	     
 	    player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_beg.png", 5, 2);
 	    svetofor_region= BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_svetfor.png", 5, 1);
+	    bt_run_region= BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_bt_run.png", 3, 1);
 	    
 	    
 	    try 

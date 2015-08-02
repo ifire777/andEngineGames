@@ -82,18 +82,18 @@ public abstract class Player extends AnimatedSprite {
 		camera.onUpdate(0.1f);
 		setSpeed(body.getLinearVelocity().x);
 
-		if (getSpeed() <= 1) {
+		if (getSpeed() <= 1.1) {
 		    canRun = false;
 		    // onStop();
 		}
 
 		if (canRun) {
-		    if (getSpeed() > 10) {
+		    if (getSpeed() > 11) {
 			if (frameDuration != 70l) {
 			    frameDuration = 70l;
 			    changeFrameDuration(frameDuration, animFrame, getCurrentTileIndex());
 			}
-		    } else if (getSpeed() > 5) {
+		    } else if (getSpeed() > 8) {
 			if (frameDuration != 90l) {
 			    frameDuration = 90l;
 			    changeFrameDuration(frameDuration, animFrame, getCurrentTileIndex());
@@ -137,7 +137,7 @@ public abstract class Player extends AnimatedSprite {
 	    this.frameDuration = 0l;
 	    body.applyLinearImpulse(1f, 0, body.getPosition().x, body.getPosition().y);
 	} else {
-	    body.applyLinearImpulse((float) Math.pow(0.01, this.getSpeed() / 100), 0, body.getPosition().x, body.getPosition().y);
+	    body.applyLinearImpulse((float) Math.pow(0.01, this.getSpeed() / 20), 0, body.getPosition().x, body.getPosition().y);
 	}
 	canRun = true;
     }
