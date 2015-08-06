@@ -1,8 +1,9 @@
 package by.kipind.game.olympicgames;
 
+import java.util.Map;
+
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
-import org.andengine.engine.camera.Camera;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
@@ -14,22 +15,31 @@ import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSourc
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import android.graphics.Color;
+import by.kipind.game.olympicgames.resourceObjects.BaseResConteiner;
+import by.kipind.game.olympicgames.resourceObjects.Run100Graf;
+import by.kipind.game.olympicgames.resourceObjects.RunBarGraf;
 
 public class ResourcesManager {
     // ---------------------------------------------
     // VARIABLES
     // ---------------------------------------------
+    static final int GAME_ID_RUN100 = 1;
+    static final int GAME_ID_RUN_BARIER = 2;
+    static final int GAME_ID_LONG_JUMP = 3;
+    static final int GAME_ID_TRIPL_JUMP = 4;
+    static final int GAME_ID_SHOOTING = 5;
+    static final int GAME_ID_BOW_SHOOTING = 6;
+    static final int GAME_ID_BOW_SPEAR = 6;
 
     private static final ResourcesManager INSTANCE = new ResourcesManager();
 
     public Engine engine;
     public GameActivity activity;
-    public BoundCamera  camera;
+    public BoundCamera camera;
     public VertexBufferObjectManager vbom;
 
     public Font font;
@@ -43,39 +53,8 @@ public class ResourcesManager {
     public ITextureRegion play_region;
     public ITextureRegion options_region;
     private BuildableBitmapTextureAtlas menuTextureAtlas;
+    public Map<String, ITextureRegion> gameGraf;
 
-    // Game Texture
-    public BuildableBitmapTextureAtlas gameTextureAtlas;
-
-    // Game Texture Regions
-    public ITextureRegion game_background_region;
-    public ITextureRegion game_ground_line;
-    public ITextureRegion game_hud_borders_region;
-    public ITextureRegion game_hud_run_left;
-    public ITextureRegion game_hud_run_right;
-    public ITextureRegion timer_img;
-    public ITextureRegion ge_ai_fon;
-    public ITextureRegion ge_ai_red;
-    public ITextureRegion ge_ai_runner_on;
-    public ITextureRegion ge_ai_runner_off;
-    
-    public ITextureRegion ge_pi_fon;
-    public ITextureRegion ge_pi_red;
-    public ITextureRegion ge_pi_skin;
-    
-    
-    public ITextureRegion stop_line;
-    
-    public ITextureRegion metraj_20;
-    public ITextureRegion metraj_40;
-    public ITextureRegion metraj_60;
-    public ITextureRegion metraj_80;
-    public ITextureRegion metraj_line;
-    
-    
-    public ITiledTextureRegion player_region;
-    public ITiledTextureRegion svetofor_region;
-    public ITiledTextureRegion bt_run_region;
     // ---------------------------------------------
     // CLASS LOGIC
     // ---------------------------------------------
@@ -86,10 +65,26 @@ public class ResourcesManager {
 	loadMenuFonts();
     }
 
-    public void loadGameResources() {
-	loadGameGraphics();
+    public void loadGameResources(int gameId) {
+	switch (gameId) {
+	case GAME_ID_RUN100:
+	    gameGraf = new Run100Graf(activity).getTextureRegionMap();
+
+	    loadRun100Audio();
+	    break;
+	case GAME_ID_RUN_BARIER:
+	    gameGraf = new RunBarGraf(activity).getTextureRegionMap();
+	    loadRun100Audio();
+	    break;
+	case GAME_ID_LONG_JUMP:
+
+	    break;
+
+	default:
+	    break;
+	}
 	loadGameFonts();
-	loadGameAudio();
+
     }
 
     private void loadMenuGraphics() {
@@ -120,67 +115,20 @@ public class ResourcesManager {
     }
 
     private void loadGameGraphics() {
-	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-	    gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 4096, 4096, TextureOptions.BILINEAR);
-	    
-	    
-	    game_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "fon_beg.jpg");
-	    game_ground_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "ground_line2.png");
-	    game_hud_borders_region= BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "hud_borders.png");
-	    game_hud_run_left= BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bt_l_leg.png");
-	    game_hud_run_right= BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "bt_r_leg.png");
-	    
-	    timer_img = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "run_timer.png");
-	    stop_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "finish_line.png");
-	    
-	    metraj_20 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_20.png");
-	    metraj_40 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_40.png");
-	    metraj_60 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_60.png");
-	    metraj_80 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_80.png");
-	    metraj_line = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "metraj_line.png");
-	    
-	    ge_ai_fon = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_bg.png");
-	    ge_ai_red = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_red.png");
-	    ge_ai_runner_on = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_begun_on.png");
-	    ge_ai_runner_off = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "indik_begun_off.png");
-	    
-	    ge_pi_fon = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "pi_fon.png");
-	    ge_pi_red = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "pi_red.png");
-	    ge_pi_skin = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "pi_form.png");
-		    
-	     
-	    player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_beg.png", 5, 2);
-	    svetofor_region= BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_svetfor.png", 5, 1);
-	    bt_run_region= BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "atlas_bt_run.png", 3, 1);
-	    
-	    
-	    try 
-	    {
-	        this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
-	        this.gameTextureAtlas.load();
-	    } 
-	    catch (final TextureAtlasBuilderException e)
-	    {
-	        Debug.e(e);
-	    }
-	    
-	    
-	    
     }
 
     private void loadGameFonts() {
-	
-	
 
     }
 
-    private void loadGameAudio() {
+    private void loadRun100Audio() {
 
     }
 
     public void loadSplashScreen() {
 	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 	splashTextureAtlas = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+
 	splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, activity, "splash.jpg", 0, 0);
 	splashTextureAtlas.load();
     }

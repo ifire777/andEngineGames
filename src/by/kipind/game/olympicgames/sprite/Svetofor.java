@@ -7,6 +7,7 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.graphics.Color;
@@ -38,7 +39,7 @@ public class Svetofor extends AnimatedSprite {
     // ---------------------------------------------
 
     public Svetofor(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
-	super(pX, pY, ResourcesManager.getInstance().svetofor_region, vbo);
+	super(pX, pY,(ITiledTextureRegion) ResourcesManager.getInstance().gameGraf.get("svetofor_region"), vbo);
 	createPhysics(camera, physicsWorld);
 	
 	//this.setWidth(this.getWidth()*4);

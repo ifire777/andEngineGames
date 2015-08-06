@@ -10,9 +10,9 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import android.view.MotionEvent;
 
 public abstract class AnimBtn extends AnimatedSprite implements IOnAreaTouchListener {
-    static int BTN_STATE_FREE = 0;
-    static int BTN_STATE_PRESSED = 1;
-    static int BTN_STATE_UNACTIVE = 2;
+   public static int BTN_STATE_FREE = 0;
+   public static int BTN_STATE_PRESSED = 1;
+   public static int BTN_STATE_UNACTIVE = 2;
 
     public AnimBtn(float pX, float pY, ITiledTextureRegion pTiledTextureRegion, VertexBufferObjectManager vbo) {
 	super(pX, pY, pTiledTextureRegion, vbo);

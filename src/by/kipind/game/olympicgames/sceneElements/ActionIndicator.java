@@ -48,10 +48,10 @@ public class ActionIndicator extends HUD {
 	mIndRedAreaAligh = iType;
 	mIndBorderReachFlag = 1;
 
-	this.mIndicFon = new Sprite(pX, pY, ResourcesManager.getInstance().ge_ai_fon, vbo);
-	this.mIndicRedArea = new Sprite(pX, pY, ResourcesManager.getInstance().ge_ai_red, vbo);
-	this.mIndRunnerOn = new Sprite(pX, pY, ResourcesManager.getInstance().ge_ai_runner_on, vbo);
-	this.mIndRunnerOff = new Sprite(pX, pY, ResourcesManager.getInstance().ge_ai_runner_off, vbo);
+	this.mIndicFon = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_ai_fon"), vbo);
+	this.mIndicRedArea = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_ai_red"), vbo);
+	this.mIndRunnerOn = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_ai_runner_on"), vbo);
+	this.mIndRunnerOff = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_ai_runner_off"), vbo);
 
 	this.registerUpdateHandler(new TimerHandler(1 / RUNNER_FPS, true, new ITimerCallback() {
 	    @Override

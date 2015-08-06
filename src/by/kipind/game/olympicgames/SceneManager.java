@@ -111,11 +111,14 @@ public class SceneManager {
 	mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() {
 	    public void onTimePassed(final TimerHandler pTimerHandler) {
 		mEngine.unregisterUpdateHandler(pTimerHandler);
-		ResourcesManager.getInstance().loadGameResources();
+		
+		ResourcesManager  rm=ResourcesManager.getInstance();
+		rm.loadGameResources(gameNum);
+		
 		switch (gameNum) {
-		case 1:gameScene = new Run100GS();
+		case  1:gameScene = new Run100GS();
 		    break;
-		case 2:gameScene = new RunBarGS();
+		case  2:gameScene = new RunBarGS();
 		    break;
 
 		default:

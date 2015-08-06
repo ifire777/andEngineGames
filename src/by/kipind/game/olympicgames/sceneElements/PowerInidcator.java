@@ -39,9 +39,9 @@ public class PowerInidcator extends HUD {
 	mIndRedAreaAligh = -1;
 	mIndMaxVal = maxValue;
 
-	this.mIndicFon = new Sprite(pX, pY, ResourcesManager.getInstance().ge_pi_fon, vbo);
-	this.mIndicRedArea = new Sprite(pX, pY, ResourcesManager.getInstance().ge_pi_red, vbo);
-	this.mIndicSkin = new Sprite(pX, pY, ResourcesManager.getInstance().ge_pi_skin, vbo);
+	this.mIndicFon = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_pi_fon"), vbo);
+	this.mIndicRedArea = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_pi_red"), vbo);
+	this.mIndicSkin = new Sprite(pX, pY, ResourcesManager.getInstance().gameGraf.get("ge_pi_skin"), vbo);
 
 	this.attachChild(this.mIndicFon);
 	this.attachChild(this.mIndicRedArea);
