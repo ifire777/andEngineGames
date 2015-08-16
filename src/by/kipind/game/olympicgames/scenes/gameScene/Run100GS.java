@@ -26,6 +26,7 @@ import org.andengine.util.level.simple.SimpleLevelLoader;
 import org.xml.sax.Attributes;
 
 import android.graphics.Color;
+import android.view.MotionEvent;
 import by.kipind.game.olympicgames.ResourcesManager;
 import by.kipind.game.olympicgames.SceneManager;
 import by.kipind.game.olympicgames.SceneManager.SceneType;
@@ -132,7 +133,10 @@ public class Run100GS extends BaseScene implements IOnSceneTouchListener {
 	    @Override
 	    public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 		super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-		return SceneObjectTouch(this);
+		if (pSceneTouchEvent.getAction() == MotionEvent.ACTION_DOWN) {
+		    return SceneObjectTouch(this);
+		}
+		return false;
 	    }
 	};
 

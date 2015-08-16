@@ -24,7 +24,7 @@ public class RunBarGraf extends BaseResConteiner {
     private void loadRunBarGraphics() {
 
 	BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-	gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 4096, 4096, TextureOptions.BILINEAR);
+	gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 4096, 4096, TextureOptions.NEAREST_PREMULTIPLYALPHA);
 
 	textureRegionRes.put("game_ground_line", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/ground_line2.png"));
 	textureRegionRes.put("game_hud_borders_region", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/hud_borders.png"));
@@ -36,15 +36,20 @@ public class RunBarGraf extends BaseResConteiner {
 	textureRegionRes.put("metraj_60", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/running/metraj_60.png"));
 	textureRegionRes.put("metraj_80", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/running/metraj_80.png"));
 	textureRegionRes.put("metraj_line", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/running/metraj_line.png"));
+	//textureRegionRes.put("run_bar", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/running/run_barier.png"));
+	textureRegionRes.put("run_bar_dub", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "game/running/run_barier_dub.png"));
 
 	textureRegionRes.put("timer_img", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "sprites/run_timer.png"));
 
 	textureRegionRes.put("ge_pi_fon", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "sprites/power_identific/pi_fon.png"));
 	textureRegionRes.put("ge_pi_red", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "sprites/power_identific/pi_red.png"));
 	textureRegionRes.put("ge_pi_skin", BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, activity, "sprites/power_identific/pi_form.png"));
+	
+	
 	// --Tiled
 	textureRegionRes.put("player_region", BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "sprites/atlas_beg.png", 5, 2));
 	textureRegionRes.put("svetofor_region", BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "sprites/atlas_svetfor.png", 5, 1));
+	textureRegionRes.put("barier_region", BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "sprites/atlas_run_barier.png", 3, 1));
 
 	textureRegionRes.put("bt_run_region", BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "btn/atlas_bt_run.png", 3, 1));
 	textureRegionRes.put("bt_run_jump_region", BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "btn/atlas_bt_run_jump.png", 3, 1));

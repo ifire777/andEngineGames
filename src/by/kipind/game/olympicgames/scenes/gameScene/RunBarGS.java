@@ -1,6 +1,8 @@
 package by.kipind.game.olympicgames.scenes.gameScene;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.timer.ITimerCallback;
@@ -26,12 +28,14 @@ import org.andengine.util.level.simple.SimpleLevelLoader;
 import org.xml.sax.Attributes;
 
 import android.graphics.Color;
+import android.view.MotionEvent;
 import by.kipind.game.olympicgames.ResourcesManager;
 import by.kipind.game.olympicgames.SceneManager;
 import by.kipind.game.olympicgames.SceneManager.SceneType;
 import by.kipind.game.olympicgames.sceneElements.ActionIndicator;
 import by.kipind.game.olympicgames.sceneElements.PowerInidcator;
 import by.kipind.game.olympicgames.scenes.BaseScene;
+import by.kipind.game.olympicgames.sprite.Barier;
 import by.kipind.game.olympicgames.sprite.Player;
 import by.kipind.game.olympicgames.sprite.Svetofor;
 import by.kipind.game.olympicgames.sprite.buttons.AnimBtn;
@@ -60,6 +64,8 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2 = "platform2";
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_STOP = "stop";
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_GROUND = "ground";
+    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BARIER = "barier";
+    private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BARIER_DUB = "barier_dub";
 
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER = "player";
     private static final Object TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_SVETOFOR = "svetofor";
@@ -70,6 +76,7 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
     private static final Object TAG_GAME_ELEMENT_FROM_FILE_METR_80 = "metr_80";
     private static final Object TAG_GAME_ELEMENT_FROM_FILE_METR_LINE = "metr_line";
 
+    private static final String LVL_FILE_PATH = "level/run100bar.lvl";
     // ----------
     private final int lvlWidth = 3200;
     private final int lvlHeight = 450;
@@ -78,27 +85,30 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 
     private Sprite hudAreaBorders;
     private Sprite hudTimer;
-    
+
     private BtnRun hudRunRight;
     private BtnRun hudRunJump;
-    
+
     private PowerInidcator hudPowerInidcator;
 
     private PhysicsWorld physicsWorld;
 
+    private Barier barier;
     private Player player;
     private Svetofor svetofor;
     private Text gameOverText;
-  
+
     private boolean falseStartDisplayed = false;
     private boolean firstStep = true;
 
     @Override
     public void createScene() {
+
 	createBackground();
 	createHUD();
 	createPhysics();
-	loadLevel(1);
+
+	loadLevel();
 	createGameOverText();
 	setOnSceneTouchListener(this);
 
@@ -132,13 +142,17 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 	hudAreaBorders = new Sprite(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, resourcesManager.gameGraf.get("game_hud_borders_region"), vbom);
 	hudTimer = new Sprite(0, 0, resourcesManager.gameGraf.get("timer_img"), vbom);
 	hudTimer.setPosition(hudTimer.getWidth() / 1.3f, SCENE_HEIGHT - hudTimer.getHeight() / 1.5f);
-	hudPowerInidcator = new PowerInidcator(SCENE_WIDTH / 2,  SCENE_HEIGHT / 6, 15f, camera, vbom);
+	hudPowerInidcator = new PowerInidcator(SCENE_WIDTH / 2, SCENE_HEIGHT / 6, 15f, camera, vbom);
 
 	hudRunRight = new BtnRun(SCENE_WIDTH / 2f, SCENE_HEIGHT / 2f, (ITiledTextureRegion) ResourcesManager.getInstance().gameGraf.get("bt_run_region"), vbom) {
 	    @Override
 	    public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 		super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-		return SceneObjectTouch(this);
+		if (pSceneTouchEvent.getAction() == MotionEvent.ACTION_DOWN) {
+		    return SceneObjectTouch(this);
+		}
+		return false;
+
 	    }
 	};
 	hudRunRight.setPosition(SCENE_WIDTH - (hudRunRight.getHeight() / 2 + 25), hudRunRight.getWidth() / 2 + 8);
@@ -152,9 +166,6 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 	};
 	hudRunJump.setPosition((hudRunJump.getHeight() / 2 + 25), hudRunJump.getWidth() / 2 + 8);
 
-	
-	
-	
 	// CREATE SCORE TEXT
 	final Text scoreText = new Text(0, 0, resourcesManager.font, "Time: 0.1234567890", new TextOptions(HorizontalAlign.LEFT), vbom);
 	scoreText.setAnchorCenter(0, 0);
@@ -190,7 +201,7 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 	gameHUD.registerUpdateHandler(new TimerHandler(1 / 60f, true, new ITimerCallback() {
 	    @Override
 	    public void onTimePassed(final TimerHandler pTimerHandler) {
-		hudPowerInidcator.changeValue(player.getSpeed()-1);
+		hudPowerInidcator.changeValue(player.getSpeed() - 1);
 	    }
 	}));
 
@@ -203,7 +214,7 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 	registerUpdateHandler(physicsWorld);
     }
 
-    private void loadLevel(int levelID) {
+    private void loadLevel() {
 	final SimpleLevelLoader levelLoader = new SimpleLevelLoader(vbom);
 	final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(0, 0.01f, 0.5f);
 
@@ -228,7 +239,6 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 		final String type = SAXUtils.getAttributeOrThrow(pAttributes, TAG_ENTITY_ATTRIBUTE_TYPE);
 
 		final Sprite levelObject;
-
 		if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLATFORM2)) {
 		    levelObject = new Sprite(x, y, resourcesManager.gameGraf.get("ge_ai_fon"), vbom);
 		    final Body body = PhysicsFactory.createBoxBody(physicsWorld, levelObject, BodyType.StaticBody, FIXTURE_DEF);
@@ -251,7 +261,37 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 			    }
 			}
 		    };
-		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER)) {
+		} else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BARIER)) {
+		    barier = new Barier(x, y, vbom, camera, physicsWorld) {
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+			    super.onManagedUpdate(pSecondsElapsed);
+			    if (player.collidesWith(new Sprite(x, y - 5, resourcesManager.gameGraf.get("run_bar_dub"), vbom))) {
+				this.toFall();
+				player.setSpeedBeforJump(3f);
+
+			    }
+			}
+		    };
+		    levelObject = barier;
+
+		} /*
+		   * else if
+		   * (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_BARIER_DUB)) {
+		   * barier = new Barier(x, y, vbom, camera, physicsWorld);
+		   * bariers.add(barier); levelObject = barier;
+		   * bariers_dub.add(new Sprite(x, y,
+		   * resourcesManager.gameGraf.get("run_bar_dub"), vbom) {
+		   * 
+		   * @Override protected void onManagedUpdate(float
+		   * pSecondsElapsed) { super.onManagedUpdate(pSecondsElapsed);
+		   * if (player.collidesWith(this)) { bariers.get(bariers.size()
+		   * - 1).toFall(); player.body.setLinearVelocity(3, 0);
+		   * 
+		   * } } });
+		   * 
+		   * }
+		   */else if (type.equals(TAG_ENTITY_ATTRIBUTE_TYPE_VALUE_PLAYER)) {
 		    player = new Player(x, y, vbom, camera, physicsWorld) {
 			public void onFinish() {
 			    super.onFinish();
@@ -294,7 +334,7 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 	    }
 	});
 
-	levelLoader.loadLevelFromAsset(activity.getAssets(), "level/run100.lvl");
+	levelLoader.loadLevelFromAsset(activity.getAssets(), LVL_FILE_PATH);
     }
 
     private boolean SceneObjectTouch(Object touchedObj) {
@@ -315,8 +355,8 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 	    firstStep = false;
 	    res = true;
 	}
-	
-	if (touchedObj.equals(hudRunJump) && hudRunJump.getCurrentTileIndex()!=AnimBtn.BTN_STATE_UNACTIVE && !firstStep) {
+
+	if (touchedObj.equals(hudRunJump) && !firstStep) {
 	    player.jumpUp();
 	    res = true;
 	}
@@ -330,7 +370,7 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 		final Fixture x2 = contact.getFixtureB();
 
 		if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null) {
-		    if (x2.getBody().getUserData().equals("player")) {
+		    if (x2.getBody().getUserData().equals("player") && x1.getBody().getUserData().equals("ground")) {
 			player.increaseFootContacts();
 		    }
 		}
@@ -341,7 +381,7 @@ public class RunBarGS extends BaseScene implements IOnSceneTouchListener {
 		final Fixture x2 = contact.getFixtureB();
 
 		if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null) {
-		    if (x2.getBody().getUserData().equals("player")) {
+		    if (x2.getBody().getUserData().equals("player") && x1.getBody().getUserData().equals("ground")) {
 			player.decreaseFootContacts();
 		    }
 		}

@@ -29,6 +29,7 @@ public abstract class Player extends AnimatedSprite {
 
     private int footContacts = 0;
     private float speed = 0;
+    private float speedBeforJump = 0;
     private Long frameDuration = 0l;
 
     private int[] animFrame = new int[] { 1, 2, 3, 4, 5, 6 };
@@ -41,6 +42,9 @@ public abstract class Player extends AnimatedSprite {
 
     public Player(float pX, float pY, VertexBufferObjectManager vbo, Camera camera, PhysicsWorld physicsWorld) {
 	super(pX, pY, (ITiledTextureRegion)ResourcesManager.getInstance().gameGraf.get("player_region"), vbo);
+	this.setHeight(this.getHeight()*0.7f);
+	this.setWidth(this.getWidth()*0.7f);
+	
 	createPhysics(camera, physicsWorld);
 	camera.setChaseEntity(this);
 
@@ -84,6 +88,7 @@ public abstract class Player extends AnimatedSprite {
 		setSpeed(body.getLinearVelocity().x);
 
 		if (getSpeed() <= 1.1) {
+		    stopAnimation(0);
 		    canRun = false;
 		    // onStop();
 		}
@@ -106,8 +111,7 @@ public abstract class Player extends AnimatedSprite {
 			}
 		    }
 		} else {
-		    stopAnimation(0);
-
+		   
 		}
 	    }
 
@@ -130,7 +134,7 @@ public abstract class Player extends AnimatedSprite {
     }
 
     public void powFunctionRun() {
-	if (isFinish) {
+	if (isFinish ||(footContacts  !=1)) {
 	    return;
 	}
 	if (getCurrentTileIndex() == 0) {
@@ -138,13 +142,13 @@ public abstract class Player extends AnimatedSprite {
 	    this.frameDuration = 0l;
 	    body.applyLinearImpulse(1f, 0, body.getPosition().x, body.getPosition().y);
 	} else {
-	    body.applyLinearImpulse((float) Math.pow(0.01, this.getSpeed() / 20), 0, body.getPosition().x, body.getPosition().y);
+	    body.applyLinearImpulse((float) Math.pow(0.1, this.getSpeed() / 50), 0, body.getPosition().x, body.getPosition().y);
 	}
 	canRun = true;
     }
 
     public void run() {
-	if (isFinish) {
+	if (isFinish || footContacts  !=1) {
 	    return;
 	}
 	if (getCurrentTileIndex() == 0) {
@@ -159,20 +163,30 @@ public abstract class Player extends AnimatedSprite {
 
     public void increaseFootContacts() {
 	footContacts++;
+	this.setCurrentTileIndex(1);
+	this.frameDuration = 0l;
+	body.setLinearVelocity(speedBeforJump,0f);
+	canRun=true;
+	
     }
 
     public void decreaseFootContacts() {
 	footContacts--;
+	stopAnimation(3);
+	//body.applyLinearImpulse(0, 3f, body.getPosition().x, body.getPosition().y);
+	
+	//body.setLinearVelocity(this.getWidth()/64f, 3f);
+	canRun=false;
     }
 
     public void jumpUp() {
 	if (footContacts  !=1) {
 	    return;
 	}
-	body.applyLinearImpulse(0, 5, body.getPosition().x, body.getPosition().y);
-	//this.setCurrentTileIndex(1);
+	//body.applyLinearImpulse(0, 3f, body.getPosition().x, body.getPosition().y);
+	speedBeforJump=speed;
+	body.setLinearVelocity(this.getWidth()/7f, this.getHeight()/13f);
 	
-
     }
 
     public void changeFrameDuration(Long frameDuration, int[] spriteFrames, int currentFrame) {
@@ -199,5 +213,9 @@ public abstract class Player extends AnimatedSprite {
 
 	animate(spriteFameDuration, spriteFramesMod, true);
 
+    }
+
+    public void setSpeedBeforJump(float speedBeforJump) {
+        this.speedBeforJump = speedBeforJump;
     }
 }
